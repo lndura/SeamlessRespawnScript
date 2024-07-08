@@ -18,7 +18,7 @@
 if syntaxcheck then return end
 [ENABLE]
 local isNewSession = allocateMemory(1)
-writeByte(isNewSession,0)
+writeByte(isNewSession,1)
 
 local function setFlags(arg)
    writeByte("[[[[[WorldChrMan]+10EF8]+0]+190]+68]+1D3",arg) -- gravity
@@ -40,6 +40,8 @@ end
 function respawn(player)
    createThread(function() -- CE sleep pauses program but in a thread it stays local.
       setFlags(1) -- stop
+
+      sleep(1000) -- delay for load in. Prevents teleporting in to the void
 
       local base,offset = '[[[[[WorldChrMan]+10EF8]+',']+190]+68]+70'
       local self,other = base .. 0 .. offset , base .. (player*10) .. offset
