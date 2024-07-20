@@ -17,75 +17,6 @@
 --]]
 if syntaxcheck then return end
 [ENABLE]
-local isNewSession = allocateMemory(1)
-writeByte(isNewSession,1)
-
-local function setFlags(arg)
-   writeByte("[[[[[WorldChrMan]+10EF8]+0]+190]+68]+1D3",arg) -- gravity
-   writeBit("[[[[[WorldChrMan]+10EF8]+0]+190]+0]+19B",1,arg) -- stopDeath
-   writeBit("[[[[[WorldChrMan]+10EF8]+0]+190]+0]+19B",0,arg) -- stopDamage
-   writeBit("[[[WorldChrMan]+10EF8]+0]+530",5,arg)           -- stopMovement
-end
-
-function getPlayer()
-   for i = 1,5 do -- check player list
-      local ptr = "[[[[WorldChrMan]+10EF8]+" .. i*10 .. "]+580]+10" -- health
-      if readInteger(ptr) ~= nil and readInteger(ptr) ~= 0 then
-         return i -- return player index
-      end
-   end
-   return nil -- no player found
-end
-
-function respawn(player)
-   createThread(function() -- CE sleep pauses program but in a thread it stays local.
-      setFlags(1) -- stop
-
-      sleep(1000) -- delay for load in. Prevents teleporting in to the void
-
-      local base,offset = '[[[[[WorldChrMan]+10EF8]+',']+190]+68]+70'
-      local self,other = base .. 0 .. offset , base .. (player*10) .. offset
-
-      local coords = readBytes(other,20,true) -- log coordinates
-      local health = readInteger("[[[[WorldChrMan]+10EF8]+0]+580]+14")
-
-      sleep(10000) -- delay
-
-      if coords ~= nil and readBytes(self,20,true) ~= nil then
-         writeBytes(self,coords) -- teleport to logged position
-      else
-         writeByte(isNewSession,0) -- target no longer exists
-      end
-
-      writeBit("[[[WorldChrMan]+10EF8]+0]+531",0,0) -- resume updating
-      writeInteger("[[[[[WorldChrMan]+0x10Ef8]+0*0x10]+0x190]+0x58]+0x18", 60501) -- do spawn animation
-      writeInteger("[[[[[WorldChrMan]+10EF8]+0]+190]+0]+138",health) -- reset health if we took damage somehow.
-
-      setFlags(0) -- resume
-   end)
-end
-
-local respawnTimer = createTimer(getMainForm())
-respawnTimer.Interval = 500
-respawnTimer.OnTimer = function()
-   if readInteger("[[[[WorldChrMan]+10EF8]+0]+580]+10") ~= nil then -- we exist and game is on.
-      local player = getPlayer()
-      if readByte(isNewSession) == 0 and player ~= nil then -- check if we should respawn
-         writeByte(isNewSession,1)
-         writeInteger("[[[WorldChrMan]+10EF8]+0]+538",60) -- phantomColor Change, but only clientside
-         writeBit("[[[WorldChrMan]+10EF8]+0]+531",0,1) -- stop updating
-
-         respawn(player)
-      end
-   else
-      writeByte(isNewSession,0)
-   end
-
-   if not memrec.Active then -- stop timer if script is off
-      deAlloc(isNewSession)
-      respawnTimer.destroy()
-   end
-end
 [DISABLE]
 </AssemblerScript>
       <CheatEntries>
@@ -95,13 +26,8 @@ end
           <LastState/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>{$lua}
---[[
-     Pointers by Lucie (LDSKR)
---]]
-if syntaxcheck then return end
 [ENABLE]
-respawn(getPlayer())
-disableMemrec(memrec)
+print("buddy why are you using this when spawns are fixed :sob:")
 [DISABLE]
 
 </AssemblerScript>
