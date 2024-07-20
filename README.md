@@ -1,4 +1,6 @@
-#### Due to Seamless being updated to 1.8.0, this script has been removed from GitHub. This is because this update has fixed the inherent issues with the invasion spawns and hence the script is no longer needed and closer akin to cheating.
+### Due to Seamless being updated to 1.8.0, this script has been removed from GitHub. This is because this update has fixed the inherent issues with the invasion spawns and hence the script is no longer needed and closer akin to cheating.
+
+
 
 
 # SeamlessRespawnScript
